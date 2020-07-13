@@ -1,0 +1,4 @@
+{
+  "mongodbURI": "mongodb+srv://<username>:<password>@cluster0-zblyu.mongodb.net/<dbname>?retryWrites=true&w=majority",
+  "jwt_secret": "ilovejsonwebtoken"
+}
