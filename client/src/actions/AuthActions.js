@@ -48,13 +48,13 @@ export const getConfig = (getState) => {
   const token = getState().Auth.token;
 
   const config = {
-    header: {
+    headers: {
       "Content-Type": "application/json",
     },
   };
 
   if (token) {
-    config.header["X-Auth-Key"] = token;
+    config.headers["x-auth-token"] = token;
   }
   return config;
 };
@@ -115,8 +115,8 @@ export const login = ({ email, password }) => (dispatch) => {
     });
 };
 
-export const logout = () => (dispatch) => {
-  dispatch({
+export const logout = () => {
+  return {
     type: LOGOUT_SUCCESS,
-  });
+  };
 };

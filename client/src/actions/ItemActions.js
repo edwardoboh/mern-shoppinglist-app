@@ -1,3 +1,5 @@
+import { getConfig } from "./AuthActions";
+import { getErrors } from "./ErrorActions";
 import { GET_ITEMS, ADD_ITEM, DELETE_ITEM, ITEMS_LOADING } from "./ItemTypes";
 import axios from "axios";
 const NULL = "NULL";
@@ -9,45 +11,60 @@ export const getItems = () => (dispatch) => {
 
   dispatch(setItemsLoading());
 
-  axios.get("/api/items").then((res) =>
-    dispatch({
-      type: GET_ITEMS,
-      payload: res.data,
-    })
-  );
+  axios
+    .get("/api/items")
+    .then((res) =>
+      dispatch({
+        type: GET_ITEMS,
+        payload: res.data,
+      })
+    )
+    .catch((err) =>
+      dispatch(getErrors(err.response.data, err.response.status))
+    );
 };
 
-export const addItem = (item) => (dispatch) => {
+export const addItem = (item) => (dispatch, getState) => {
   // return {
   //   type: ADD_ITEM,
   //   payload: item,
   // };
 
-  axios.post("/api/items", item).then((res) =>
-    dispatch({
-      type: ADD_ITEM,
-      payload: res.data,
-    })
-  );
+  axios
+    .post("/api/items", item, getConfig(getState))
+    .then((res) =>
+      dispatch({
+        type: ADD_ITEM,
+        payload: res.data,
+      })
+    )
+    .catch((err) =>
+      dispatch(getErrors(err.response.data, err.response.status))
+    );
 };
 
-export const deleteItem = (_id) => (dispatch) => {
+export const deleteItem = (_id) => (dispatch, getState) => {
   // return {
   //   type: DELETE_ITEM,
   //   payload: _id,
   // };
 
-  axios.delete(`/api/items/${_id}`).then((res) => {
-    if (res.data.msg === "success") {
+  axios
+    .delete(`/api/items/${_id}`, getConfig(getState))
+    .then((res) => {
+      if (res.data.msg === "Delete Success") {
+        return dispatch({
+          type: DELETE_ITEM,
+          payload: _id,
+        });
+      }
       return dispatch({
-        type: DELETE_ITEM,
-        payload: _id,
+        type: NULL,
       });
-    }
-    return dispatch({
-      type: NULL,
-    });
-  });
+    })
+    .catch((err) =>
+      dispatch(getErrors(err.response.data, err.response.status))
+    );
 };
 
 export const setItemsLoading = () => {
